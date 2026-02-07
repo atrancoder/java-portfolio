@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+<nav>
+    <a href="/">About Me</a> |
+    <a href="/resume">Resume</a> |
+    <a href="/projects">Projects</a>
+</nav>
+
+<h2>Projects</h2>
+
+<h3>Family Feud Java Game</h3>
+<p>
+    This is a Java-backed Family Feud style game demonstrating REST APIs,
+    game logic, and frontend-backend integration.
+</p>
+
+<button onclick="loadQuestion()">Start / Load Question</button>
+
+<h4 id="question"></h4>
+<p>Score: <span id="score">0</span></p>
+
+<input id="guess" placeholder="Enter your guess" />
+<button onclick="submitGuess()">Guess</button>
+
+<div id="result"></div>
+
+<button onclick="nextQuestion()">Next Question</button>
+
+<script>
+    async function loadQuestion() {
+        const res = await fetch('/api/feud/current');
+        const data = await res.json();
+        document.getElementById('question').innerText = data.question;
+        document.getElementById('score').innerText = data.score;
+    }
+
+    async function submitGuess() {
+        const g = document.getElementById('guess').value;
+        const res = await fetch('/api/feud/guess?guess=' + g, { method: 'POST' });
+        const data = await res.json();
+        document.getElementById('result').innerText = JSON.stringify(data);
+        document.getElementById('score').innerText = data.score;
+    }
+
+    async function nextQuestion() {
+        await fetch('/api/feud/next', { method: 'POST' });
+        loadQuestion();
+    }
+</script>
+</body>
+</html>
